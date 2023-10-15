@@ -1,38 +1,94 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { ActionTypes } from '../redux/actionTypes/todoTypes';
+import { deleteTodo,uptadeTodo } from '../redux/actions/todoAction';
+import axios from 'axios';
+
 
 const TodoCard = ({todo}) => {
     const dispatch= useDispatch();
+    const [isProcess,setIsProcess] = useState({
+        delete:false,
 
+    })
+
+    const [isEditMode,setIsEditMode] =useState(false)
     const handleDelete = ()=> {
-        dispatch({
-            type:ActionTypes.DELETE_TODO,
-            payload:todo.id
+
+        setIsProcess({...isProcess,delete:true})
+
+        axios.delete(`/todos/${todo.id}`)
+        .then(()=>  {
+            dispatch(deleteTodo(todo.id));
+            setIsProcess({...isProcess,delete:false})
         })
+      
 
     }
     const handleEdit = () => {
         //yapıldı değerini tersine çevirir
         const updated = { ...todo,isDone:!todo.isDone}
-        console.log(updated)
-        dispatch({
-            type:ActionTypes.UPDATE_TODO,
-            payload:updated
+
+        setIsProcess({...isProcess,edit:true})
+
+        axios.put(`/todos/${todo.id}`,updated)
+        .then(()=> {
+            dispatch(uptadeTodo(updated));
+            setIsProcess({...isProcess,edit:false})
+        }) 
+    }
+    const handleSave = (e) => {
+        e.preventDefault();
+        const text = e.target[0].value;
+
+        const updated = {...todo,text}
+
+        axios.put(`/todos/${todo.id}`,updated)
+        .then(()=> {
+            dispatch(uptadeTodo(updated))
+            setIsEditMode(false)
         })
     }
   return (
     <div className='border shadow-lg p-4 my-5 rounded'>
         <div className='d-flex justify-content-between'>
-        <h3> {todo.text}</h3>
-        <p>{todo.date.toLocaleDateString()}</p>
+      {
+        !isEditMode ?   <h3> {todo.text}</h3> :
+        <form onSubmit={handleSave} className='d-flex gap-4 mb-4'>
+           <input className='form-control' defaultValue={todo.text}/>   
+           <button className='btn btn-primary btn-sm'>Kaydet</button>     
+        </form>
+     
+
+      }
+        <p>{new Date(todo.date).toLocaleDateString()}</p>
         </div>
       
         <h6>{todo.isDone ? "Tamamlandı" : "Devam Ediyor"}</h6>
      
         <div className='btn-group mt-3'>
-        <button onClick={handleEdit} className='btn btn-warning '>{todo.isDone ? "Geri Al" : "Tamamla"}</button>
-        <button onClick={handleDelete} className='btn btn-danger '>Sil</button>
+
+        <button onClick={()=> setIsEditMode(!isEditMode)} className='btn btn-warning '>
+            {isProcess.update && 
+             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> 
+            </span> 
+            }
+          {!isEditMode ? 'Düzenle': 'Vazgeç'}
+        </button>
+        <button onClick={handleEdit} className='btn btn-success '>
+            {isProcess.edit && 
+             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> 
+            </span> 
+            }
+            {todo.isDone ? "Geri Al" : "Tamamla"}
+        </button>
+        <button onClick={handleDelete} className='btn btn-danger '>
+             {isProcess.delete && 
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"> 
+                </span> 
+                 }
+       
+            Sil
+            </button>
         </div>
        
     </div>

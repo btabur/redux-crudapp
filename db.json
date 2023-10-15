@@ -1,0 +1,22 @@
+{
+  "todos": [
+    {
+      "id": "88c8b89b-4401-452f-9b07-13aae3938c2d",
+      "text": "clean code ",
+      "isDone": true,
+      "date": "2023-10-15T18:46:45.992Z"
+    },
+    {
+      "id": "acbabe3b-5a40-40eb-9254-855fe0e8d95e",
+      "text": "JacaScript",
+      "isDone": false,
+      "date": "2023-10-15T19:07:23.322Z"
+    },
+    {
+      "id": "3bba6aaf-40be-400a-947c-3c225a353aa0",
+      "text": "React",
+      "isDone": false,
+      "date": "2023-10-15T19:26:37.475Z"
+    }
+  ]
+}

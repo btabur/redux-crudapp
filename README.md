@@ -22,8 +22,7 @@ import todoReducer from './reducers/todoReducer';
 import categoryReducer from './reducers/categoryReducer';
 
 // bir tane reducer var ise
-//projeye tanıtmak için export etmeliyiz
-//export default createStore(todoReducer);
+export default createStore(todoReducer);
 
 //birden çok reducer var ise bu şekilde birleştirilir
 const rootReducer = combineReducers({
@@ -82,7 +81,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   
 )
 ```
-# Store Veri Gönderme
+5. Store Veri Gönderme
 
 - store ekleme yapmak istediğiniz bileşende **useDispatch** i import edin.
 - dispatch ile reducer a yaplıması gereken emir ve ekler gönderilir.
@@ -90,6 +89,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 ``` javascript
 import { useDispatch } from 'react-redux'
+
+ const dispatch= useDispatch()
 
 const dispatch= useDispatch()
 
@@ -101,17 +102,60 @@ const dispatch= useDispatch()
 
 ```
 
-# Store dan Veri Çekme
+6. Store dan Veri Çekme
 
 - useSelector metodu ile store ile bağlantı kurulur
 
 ```javascript
 import { useSelector } from 'react-redux'
  const state = useSelector((store)=>store.todoReducer)
+
+ state.todos.map((todo,index) => <TodoCard key={index} todo= {todo}/>)
+```
+
+7. action Types :  dispatch ile gönderdiğimiz emirleri veya reducer daki case leri strin ifadeler şekilinde manuel yazığımızda bir harf hatasından dolayı kodlar çalışmayabilir. bunun önüne geçebilmek için action type lar ayrı bir dosyada toplanır ve her yere çağrılırlar.
+
+```javascript
+export const ActionTypes = {
+    ADD_TODO:'ADD_TODO',
+    DELETE_TODO:'DELETE_TODO',
+    UPDATE_TODO:'UPDATE_TODO'
+}
+
+ case ActionTypes.ADD_TODO:  // şeklinde çağrılırlar
+```
+
+8. Actions : dispatch ile her seferinde emir girerken emrin tipini ve eklenecek elemanı vermek her seferinde benzer kodları yazmak anlamına geleceği için bu emirler de farklı bir dosyada tutulabilir.
+
+```javascript
+// payloadı olmayan bir aksiyon tanımlama
+const ADD_COUNT =  {
+    type: 'ADD_COUNT',
+};
+
+
+export const deleteTodo= (payload) => ({ 
+    type:ActionTypes.DELETE_TODO,
+    payload
+})
+
+  dispatch(addTodo(newTodo))  // şeklinde kullanılır
+```
+
+### Dikkat !!!
+- Hem api hem de redux kullanılan projelerde store u güncelleme api isteğine bağımlı hale getirilmelidir.api isteği başarılı olursa store değiştirilmelidir.
+
+```javascript
+ axios.post('/todos',newTodo).then(()=>{
+          //api ye başarılı bir şekilde kayıt yapıldıktan sonra reducer a emir gönderiyoruz
+          dispatch(addTodo(newTodo))
+
+        })
 ```
 
 
 
+![](redux.jpg)
 
 
 * Benzersiz id oluşturma
